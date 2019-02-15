@@ -3,8 +3,8 @@ import os
 class Config:
     """
     """
-   SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog'
-   SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
  
 class ProdConfig(Config):
     """
