@@ -1,6 +1,7 @@
 from flask import render_template
 from . import main
 from flask import Flask
+from flask_login import login_required
 from urllib import request
 import json
 import threading
@@ -8,6 +9,7 @@ import threading
 
 # basic route
 @main.route("/")
+@login_required
 def index():
    # threading.Timer(5.0, printit).start()
    response = request.urlopen('http://quotes.stormconsultancy.co.uk/random.json')
