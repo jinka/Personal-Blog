@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
-{{Head}}
-<div class="container">
-    <h1> {{ head }} </h1>
-</div>
+
+{%block content%}
+<h1>{{head}}</h1>
+<h3>{{author}}</h3>
+<h3>{{id}}</h3>
+<h3>{{quote}}</h3>
+<h3>{{permalink}}</h3>
+
+{%endblock%}
