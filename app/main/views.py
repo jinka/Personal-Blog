@@ -1,10 +1,14 @@
+import datetime
 from flask import render_template,redirect,url_for, flash,request
-from flask_login import login_user
-from ..models import User
-from .forms import LoginForm,RegistrationForm
 from . import main
+# from flask_login import current_user,login_required
+from ..models import Reviews, User
+# from .forms import LoginForm,RegistrationForm
+
 from flask import Flask
 from flask_login import login_required
+from .. import db,photos
+
 from urllib import request
 import json
 import threading
@@ -30,3 +34,43 @@ def index():
       head = "Welcome to my Blog"
       # return render_template('index.html',head=head)
       return render_template("index.html", head = head, author = author, id = id, quote = quote, permalink = permalink)
+
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username = uname).first()
+
+    if user is None:
+        abort(404)
+
+    return render_template("profile/profile.html", user = user)
+
+
+@main.route('/user/<uname>/update',methods = ['GET','POST'])
+@login_required
+def update_profile(uname):
+    user = User.query.filter_by(username = uname).first()
+    if user is None:
+        abort(404)
+
+    form = UpdateProfile()
+
+    if form.validate_on_submit():
+        user.bio = form.bio.data
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('.profile',uname=user.username))
+
+    return render_template('profile/update.html',form =form)
+
+@main.route('/user/<uname>/update/pic',methods= ['POST'])
+@login_required
+def update_pic(uname):
+    user = User.query.filter_by(username = uname).first()
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'photos/{filename}'
+        user.profile_pic_path = path
+        db.session.commit()
+    return redirect(url_for('main.profile',uname=uname))
