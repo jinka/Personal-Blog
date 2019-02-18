@@ -5,30 +5,37 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_uploads import UploadSet,configure_uploads,IMAGES
 from flask_wtf.csrf import CsrfProtect
+from flask_mail import Mail
 
+# csrf = CSRFProtect(app)
 csrf = CsrfProtect()
+mail = Mail()
 
 photos = UploadSet('photos',IMAGES)
-def create_app(config_name):
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+LoginManager.login_message:'Daud requesting you to log in to access this page'
 
 def create_app(config_name):
 
     app = Flask(__name__)
 
+       
     # Creating the app configurations
     app.config.from_object(config_options[config_name])
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
     # Initializing flask extensions
     bootstrap.init_app(app)
     db.init_app(app)
+    mail.init_app(app)
     login_manager.init_app(app)
-
+    csrf.init_app(app)
+    
     # configure UploadSet
     configure_uploads(app,photos)
 

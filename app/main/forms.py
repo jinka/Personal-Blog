@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-from .forms import ReviewForm,UpdateProfile
 from .. import db
 
 from wtforms.validators import Required,Email

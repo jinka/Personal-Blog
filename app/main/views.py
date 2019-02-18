@@ -1,13 +1,16 @@
 import datetime
-from flask import render_template,redirect,url_for, flash,request
+from flask import render_template,redirect,url_for, flash,request,abort
 from . import main
-# from flask_login import current_user,login_required
-from ..models import Reviews, User
-# from .forms import LoginForm,RegistrationForm
-
-from flask import Flask
-from flask_login import login_required
+from ..models import User
+from flask_login import current_user,login_required
 from .. import db,photos
+from .forms import UpdateProfile
+
+
+# from flask import Flask
+# from .forms import LoginForm,RegistrationForm
+# from flask_login import current_user,login_required
+
 
 from urllib import request
 import json
@@ -15,6 +18,13 @@ import threading
 
 
 # basic route
+@main.route('/about')
+def about():
+    title="Welcomr to about me"
+    return render_template('about.html',title=title)
+
+@main.route('/')
+
 @main.route("/")
 @login_required
 def index():
