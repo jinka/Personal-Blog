@@ -23,10 +23,12 @@ LoginManager.login_message:'Daud requesting you to log in to access this page'
 def create_app(config_name):
 
     app = Flask(__name__)
+    app.secret_key='SECRET_KEY'
 
        
     # Creating the app configurations
     app.config.from_object(config_options[config_name])
+    # app.config("SECRET_KEY") = 'thisismykey'
     # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
     # Initializing flask extensions

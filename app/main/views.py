@@ -1,15 +1,11 @@
 import datetime
 from flask import render_template,redirect,url_for, flash,request,abort
 from . import main
-from ..models import User
+from ..models import User,Post
 from flask_login import current_user,login_required
+from flask_user import roles_required
 from .. import db,photos
-from .forms import UpdateProfile
-
-
-# from flask import Flask
-# from .forms import LoginForm,RegistrationForm
-# from flask_login import current_user,login_required
+from .forms import UpdateProfile,PostForm 
 
 
 from urllib import request
@@ -20,13 +16,13 @@ import threading
 # basic route
 @main.route('/about')
 def about():
-    title="Welcomr to about me"
+    title="Welcome to about me"
     return render_template('about.html',title=title)
 
 @main.route('/')
 
 @main.route("/")
-@login_required
+# @login_required
 def index():
    # threading.Timer(5.0, printit).start()
    response = request.urlopen('http://quotes.stormconsultancy.co.uk/random.json')
@@ -42,8 +38,11 @@ def index():
       permalink = JSON_object['permalink']
 
       head = "Welcome to my Blog"
-      # return render_template('index.html',head=head)
-      return render_template("index.html", head = head, author = author, id = id, quote = quote, permalink = permalink)
+  
+      blogs = Post.query.all()
+  
+
+      return render_template("index.html", blogs=blogs, head = head, author = author, id = id, quote = quote, permalink = permalink)
 
 @main.route('/user/<uname>')
 def profile(uname):
@@ -74,7 +73,7 @@ def update_profile(uname):
 
     return render_template('profile/update.html',form =form)
 
-@main.route('/user/<uname>/update/pic',methods= ['POST'])
+@main.route('/user/<uname>/update/pic',methods= ['GET', 'POST'])
 @login_required
 def update_pic(uname):
     user = User.query.filter_by(username = uname).first()
@@ -84,3 +83,87 @@ def update_pic(uname):
         user.profile_pic_path = path
         db.session.commit()
     return redirect(url_for('main.profile',uname=uname))
+
+
+@main.route('/post/new',methods = ['GET','POST'])
+@login_required
+
+def new_post():
+
+    post_form = PostForm()
+    if post_form.validate_on_submit():
+        title = post_form.title.data
+        post = post_form.text.data
+        category = post_form.category.data
+        new_post = Post(post_title=title,post_content=post,category=category,user=current_user,likes=0,dislikes=0)
+
+        new_post.save_post()
+
+        return redirect(url_for('.index'))
+    title = 'New Blog'
+    return render_template('new_post.html',title = title,post_form=post_form )
+
+
+@main.route('/post/sports_post')
+def sports_posts():
+
+    posts = Post.get_posts('sports')
+
+    return render_template("sport_blog.html", sports = sports)
+
+@main.route('/post/isp_post')
+def isp_posts():
+
+    posts = Post.get_posts('isp')
+    return render_template("isp_blog.html", posts = posts)
+
+@main.route('/posts/cisco_post')
+def cisco_posts():
+
+    posts = Post.get_posts('isp')
+
+    return render_template("isp_blog.html", posts = posts)
+
+@main.route('/post/<id>', methods = ['GET','POST'])
+def post(id):
+    # post = Post.get_posts(id)
+    blog = Blog.query.filter_by(id=id).first()
+    # posted_date = post.data_posted.strftime('%b %d, %Y')
+
+    if request.args.get("like"):
+        post.likes = post.likes + 1
+
+        db.session.add(post)
+        db.session.commit()
+
+        return redirect("/post/{post_id}".format(post_id=post.id))
+
+    elif request.args.get("dislike"):
+        post.dislikes = post.dislikes + 1
+
+        db.session.add(post)
+        db.session.commit()
+
+        return redirect("/post/{post_id}".format(post_id=post.id))
+
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        comment = comment_form.text.data
+
+        new_comment = Comment(comment = comment,user = current_user,post_id = post)
+
+        new_comment.save_comment()
+
+
+    comments = Comment.get_comments(post)
+
+    return render_template("posts.html", post= post, comment_form = comment_form, comments = comments, date = posted_date)
+
+@main.route('/user/<uname>/posts')
+
+def user_posts(uname):
+    user = User.query.filter_by(username=uname).first()
+    posts = Post.query.filter_by(user_id = user.id).all()
+    posts_count = Post.count_posts(uname)
+    user_joined = user.date_joined.strftime('%b %d, %Y')
+    return render_template("profile/posts.html", user=user,posts=posts,posts_count=posts_count,date = user_joined)

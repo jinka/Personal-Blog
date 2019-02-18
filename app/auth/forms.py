@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField,PasswordField,BooleanField,SubmitField
 from wtforms.validators import Required,Email,EqualTo
 from ..models import User
-from wtforms import ValidationError
+from wtforms import StringField,TextAreaField,SubmitField,ValidationError,SelectField
 
 class LoginForm(FlaskForm):
     email = StringField('Your Email Address',validators=[Required(),Email()])
@@ -24,3 +24,10 @@ class RegistrationForm(FlaskForm):
     def validate_username(self,data_field):
         if User.query.filter_by(username = data_field.data).first():
             raise ValidationError('User Name already exist in the database.')
+
+class PitchForm(FlaskForm):
+
+    title = StringField('New Pitch',validators=[Required()])
+    text = TextAreaField('Text',validators=[Required()])
+    category = SelectField('Type',choices=[('interview','Interview pitch'),('product','Product pitch'),('promotion','Promotion pitch')],validators=[Required()])
+    submit = SubmitField('Submit')

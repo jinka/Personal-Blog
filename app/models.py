@@ -35,6 +35,10 @@ class User(UserMixin,db.Model):
     posts = db.relationship('Post',backref = 'user',lazy = "dynamic")
     comments = db.relationship('Comment',backref = 'user',lazy = "dynamic")
 
+    def save_user(self):
+        db.session.add(self)
+        db.session.commit()
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -66,6 +70,11 @@ class Comment(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def get_comments(cls,post):
+        comments = Comment.query.filter_by(post_id=post).all()
+        return comments
+
 
 class Post(db.Model):
     __tablename__ = 'posts'
@@ -81,6 +90,29 @@ class Post(db.Model):
 
     comments = db.relationship('Comment',backref =  'pitch_id',lazy = "dynamic")
 
-    def save_pitch(self):
+    def save_post(self):
         db.session.add(self)
         db.session.commit()
+
+
+    @classmethod
+    def get_posts(cls,category):
+        posts = Post.query.filter_by(category=category).all()
+        return posts
+
+    @classmethod
+    def get_post(cls,id):
+        post = Post.query.filter_by(id=id).first()
+
+        return post
+
+    @classmethod
+    def count_posts(cls,uname):
+        user = User.query.filter_by(username=uname).first()
+        posts = Post.query.filter_by(user_id=user.id).all()
+
+        post_count = 0
+        for post in posts:
+            posts_count += 1
+
+        return posts_count
