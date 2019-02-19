@@ -5,8 +5,8 @@ from app.models import User,Role
 from  flask_migrate import Migrate, MigrateCommand
 
 # app = Flask(__name__)
-# app = create_app('development')
-app = create_app('production')
+app = create_app('development')
+# app = create_app('production')
 
 manager = Manager(app)
 manager.add_command('server',Server)

@@ -12,16 +12,16 @@ Content block
         <div style="margin:100px;"> 
     <div class="row">
         <div class="well well-lg">
-        <h3>{{post.post_title}}</h3>
+        <h3>{{blogs.blog_title}}</h3>
         <hr>
-        <p>{{post.post_content}}</p>
+        <p>{{blogs.blog_content}}</p>
         <span>
-        <p>Posted on {{date}} by {{post| capitalize}}</p>
-        <a href="/post/{{post.id}}?like=1">
+        <p>Posted on {{date}} by {{blogs| capitalize}}</p>
+        <a href="/post/{{blogs.id}}?like=1">
             <i class="fa fa-thumbs-up"></i>
-        </a>{{post.likes}} <a href="/post/{{post.id}}?dislike=1">
+        </a>{{blogs.likes}} <a href="/post/{{blogs.id}}?dislike=1">
             <i class="fa fa-thumbs-down"></i>
-        </a>{{post.dislikes}}</span>
+        </a>{{blogs.dislikes}}</span>
         <h4>Comments</h4>
         <hr>
         {% if current_user.is_authenticated %}

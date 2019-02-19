@@ -105,6 +105,7 @@ def new_post():
 
 
 @main.route('/post/<int:id>', methods = ['GET','POST'])
+
 def post(id):
     comment_form = CommentForm()
     blogs = Blog.query.filter_by(id=id).first
@@ -116,9 +117,7 @@ def post(id):
         db.session.commit()
 
     comments=Comment.query.filter_by(id=id).all()
-    return render_template("blog.html", post=post, comments=comments,comment_form=comment_form)
-    # comments=Comment.query.filter_by(id=id)
-    # return render_template("blog.html", post=post,comment_form=comment_form,comments=comments) 
+    return render_template("blog.html", blogs=blogs, comments=comments,comment_form=comment_form)
 
   
 @main.route('/user/<uname>/posts')
