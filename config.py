@@ -2,7 +2,7 @@ import os
 
 # class TestConfig(Config):
 #     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog_test'
-
+#
 class Config:
 
    SECRET_KEY = os.environ.get('SECRET_KEY')
