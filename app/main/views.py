@@ -1,7 +1,7 @@
 import datetime
 from flask import render_template,redirect,url_for, flash,request,abort
 from . import main
-from ..models import User,Post,Comment
+from ..models import User,Blog,Comment
 from flask_login import current_user,login_required
 from flask_user import roles_required
 from .. import db,photos
@@ -40,7 +40,7 @@ def index():
 
       head = "Welcome to my Blog"
   
-      blogs = Post.query.all()
+      blogs = Blog.query.all()
   
 
       return render_template("index.html", blogs=blogs, head = head, author = author, id = id, quote = quote, permalink = permalink)
@@ -88,7 +88,6 @@ def update_pic(uname):
 
 @main.route('/post/new',methods = ['GET','POST'])
 @login_required
-
 def new_post():
 
     post_form = PostForm()
@@ -96,9 +95,9 @@ def new_post():
         title = post_form.title.data
         post = post_form.text.data
         category = post_form.category.data
-        new_post = Post(post_title=title,post_content=post,category=category,user=current_user,likes=0,dislikes=0)
+        new_post = Blog(blog_title=title,blog_content=post,category=category,user=current_user,likes=0,dislikes=0)
 
-        new_post.save_post()
+        new_post.save_blog()
 
         return redirect(url_for('.index'))
     title = 'New Blog'
@@ -108,18 +107,18 @@ def new_post():
 @main.route('/post/<int:id>', methods = ['GET','POST'])
 def post(id):
     comment_form = CommentForm()
-    blogs = Post.query.filter_by(id=id).first
+    blogs = Blog.query.filter_by(id=id).first
 
     if comment_form.validate_on_submit():
         comment = comment_form.comment.data
-        comment= Comment(comment=comment,user=current_user,id=id)
+        comment= Comment(comment=comment,user=current_user)
         db.session.add(comment)
         db.session.commit()
-        comments=Comment.query.filter_by(id=id).all()
-        
-        return render_template("blog.html", blog=blog, comments=comments,comment_form=comment_form)
-    comments=Comment.query.filter_by(id=id)
-    return render_template("blog.html", post=post,comment_form=comment_form,comments=comments) 
+
+    comments=Comment.query.filter_by(id=id).all()
+    return render_template("blog.html", post=post, comments=comments,comment_form=comment_form)
+    # comments=Comment.query.filter_by(id=id)
+    # return render_template("blog.html", post=post,comment_form=comment_form,comments=comments) 
 
   
 @main.route('/user/<uname>/posts')

@@ -37,9 +37,9 @@
                                 {% if blogs %}
                                 {% for blog in blogs %}
                                 <li>
-                                <a href="{{url_for('main.post', id=blog.id)}}"><h1>{{blog.post_title}}</h1></a>
-                                <h2>{{blog.subtitle}}</h2>
-                                <h4>Created by <strong>{{ blog.user.username }}</strong> on {{blog.data_posted}}</h4>
+                                <a href="{{url_for('main.post', id=blog.id)}}"><h1>{{blog.blog_title}}</h1></a>
+                                <h2>{{blog.blog_title}}</h2>
+                                <h4>Created by <strong>{{ blog.username }}</strong> on {{blog.posted}}</h4>
                                 {% endfor %}
                                 {% endif%} 
                                 </li>

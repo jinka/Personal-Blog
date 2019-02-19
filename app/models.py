@@ -1,18 +1,14 @@
+from . import db
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import UserMixin
-
 from . import login_manager
 from datetime import datetime
-
-from . import db
 
 class Role(db.Model):
     __tablename__ = 'roles'
 
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(255))
-    users = db.relationship('User',backref = 'role',lazy="dynamic")
-
 
     def __repr__(self):
         return f'User {self.name}'
@@ -21,10 +17,8 @@ class User(UserMixin,db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer,primary_key = True)
-    fullname = db.Column(db.String(255))
-    username = db.Column(db.String(255))
+    username = db.Column(db.String(255),index = True)
     email = db.Column(db.String(255),unique = True,index = True)
-    phone = db.Column(db.String(255))
     role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
     bio = db.Column(db.String(255))
     profile_pic_path = db.Column(db.String())
@@ -32,7 +26,7 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(255))
 
     date_joined = db.Column(db.DateTime,default=datetime.utcnow)
-    posts = db.relationship('Post',backref = 'user',lazy = "dynamic")
+    blogs = db.relationship('Blog',backref = 'user',lazy = "dynamic")
     comments = db.relationship('Comment',backref = 'user',lazy = "dynamic")
 
     def save_user(self):
@@ -54,7 +48,7 @@ class User(UserMixin,db.Model):
 
     def verify_password(self,password):
         return check_password_hash(self.pass_secure,password)
-            
+
     def __repr__(self):
         return f'User {self.username}'
 
@@ -65,55 +59,54 @@ class Comment(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     comment = db.Column(db.String(1000))
     user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
-    post = db.Column(db.Integer,db.ForeignKey("posts.id"))
+    blog = db.Column(db.Integer,db.ForeignKey("blogs.id"))
 
     def save_comment(self):
         db.session.add(self)
         db.session.commit()
 
     @classmethod
-    def get_comments(cls,post):
-        comments = Comment.query.filter_by(post_id=post).all()
+    def get_comments(cls,pitch):
+        comments = Comment.query.filter_by(blog_id=blog).all()
         return comments
 
 
-class Post(db.Model):
-    __tablename__ = 'posts'
+class Blog(db.Model):
+    __tablename__ = 'blogs'
 
     id = db.Column(db.Integer,primary_key = True)
-    post_title = db.Column(db.String)
-    post_content = db.Column(db.String(1000))
+    blog_title = db.Column(db.String)
+    blog_content = db.Column(db.String(1000))
     category = db.Column(db.String)
-    data_posted = db.Column(db.DateTime,default=datetime.utcnow)
+    posted = db.Column(db.DateTime,default=datetime.utcnow)
     user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
     likes = db.Column(db.Integer)
     dislikes = db.Column(db.Integer)
 
-    comments = db.relationship('Comment',backref =  'post_id',lazy = "dynamic")
+    comments = db.relationship('Comment',backref =  'blog_id',lazy = "dynamic")
 
-    def save_post(self):
+    def save_blog(self):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def get_blogs(cls,category):
+        blogs = Blog.query.filter_by(category=category).all()
+        return blogs
 
     @classmethod
-    def get_posts(cls,category):
-        posts = Post.query.filter_by(category=category).all()
-        return posts
+    def get_blog(cls,id):
+        blog = Blog.query.filter_by(id=id).first()
+
+        return blog
 
     @classmethod
-    def get_post(cls,id):
-        post = Post.query.filter_by(id=id).first()
-
-        return post
-
-    @classmethod
-    def count_posts(cls,uname):
+    def count_blogs(cls,uname):
         user = User.query.filter_by(username=uname).first()
-        posts = Post.query.filter_by(user_id=user.id).all()
+        blogs = Blog.query.filter_by(user_id=user.id).all()
 
-        posts_count = 0
-        for post in posts:
-            posts_count += 1
+        blogs_count = 0
+        for blog in blogs:
+            blogs_count += 1
 
-        return posts_count
+        return blogs_count
