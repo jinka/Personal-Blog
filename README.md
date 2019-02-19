@@ -1,10 +1,11 @@
 # Project Title
 *****************
 ## Personal Blog
-This a personal web application and was generated with Python 3, Flask and PSQL Datatbase.
+This a personal Blog application and was generated with Python 3, Flask and PSQL Datatbase.
 
 # Project Description
 *******************
+This Blog you can view different blogs from different users. You can also view Random Quotes.
 
 # Setup/Installation Requirements
 *********************************
@@ -17,6 +18,11 @@ This a personal web application and was generated with Python 3, Flask and PSQL 
 # Specifications
 |Given|When|Then|
 |-----|----|----|
+|Run page|Loading page|View Blogs and random quote|
+|Refresh Page|Relaod|New Quote|
+|Click Blog|Display Blog Content|Read and Comment|
+|Login Page load|Email,Username and Password and submit|User Loggedin|
+|User can comment |Comments and submit|New comment appear|
 
 # Author information
 My name is Dayud Mohamed Farah, I am one the Moringa Core class 14.

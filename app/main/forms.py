@@ -19,3 +19,8 @@ class PostForm(FlaskForm):
     text = TextAreaField('Text',validators=[Required()])
     category = SelectField('Type',choices=[('ISP','Isp Blog'),('IPTV','IPTV Blog'),('Python','Python Blog')],validators=[Required()])
     submit = SubmitField('Submit')
+
+class CommentForm(FlaskForm):
+    comment = TextAreaField('Leave a comment:',validators=[Required()])
+    submit = SubmitField('Submit')
+

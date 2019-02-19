@@ -1,15 +1,16 @@
 import datetime
 from flask import render_template,redirect,url_for, flash,request,abort
 from . import main
-from ..models import User,Post
+from ..models import User,Post,Comment
 from flask_login import current_user,login_required
 from flask_user import roles_required
 from .. import db,photos
-from .forms import UpdateProfile,PostForm 
+from .forms import UpdateProfile,PostForm,CommentForm
 
 
-from urllib import request
-import json
+# from urllib import request
+import urllib.request, json
+# import json
 import threading
 
 
@@ -25,7 +26,7 @@ def about():
 # @login_required
 def index():
    # threading.Timer(5.0, printit).start()
-   response = request.urlopen('http://quotes.stormconsultancy.co.uk/random.json')
+   response = urllib.request.urlopen('http://quotes.stormconsultancy.co.uk/random.json')
 
    if response.code==200:
       read_Data=response.read()
@@ -104,63 +105,106 @@ def new_post():
     return render_template('new_post.html',title = title,post_form=post_form )
 
 
-@main.route('/post/sports_post')
-def sports_posts():
+# @main.route('/post/sports_post')
+# def sports_posts():
 
-    posts = Post.get_posts('sports')
+#     posts = Post.get_posts('sports')
 
-    return render_template("sport_blog.html", sports = sports)
+#     return render_template("sport_blog.html", sports = sports)
 
-@main.route('/post/isp_post')
-def isp_posts():
+# @main.route('/post/isp_post')
+# def isp_posts():
 
-    posts = Post.get_posts('isp')
-    return render_template("isp_blog.html", posts = posts)
+#     posts = Post.get_posts('isp')
+#     return render_template("isp_blog.html", posts = posts)
 
-@main.route('/posts/cisco_post')
-def cisco_posts():
+# @main.route('/posts/cisco_post')
+# def cisco_posts():
 
-    posts = Post.get_posts('isp')
+#     posts = Post.get_posts('isp')
 
-    return render_template("isp_blog.html", posts = posts)
+#     return render_template("isp_blog.html", posts = posts)
 
 @main.route('/post/<id>', methods = ['GET','POST'])
 def post(id):
-    # post = Post.get_posts(id)
-    blog = Blog.query.filter_by(id=id).first()
-    # posted_date = post.data_posted.strftime('%b %d, %Y')
-
-    if request.args.get("like"):
-        post.likes = post.likes + 1
-
-        db.session.add(post)
-        db.session.commit()
-
-        return redirect("/post/{post_id}".format(post_id=post.id))
-
-    elif request.args.get("dislike"):
-        post.dislikes = post.dislikes + 1
-
-        db.session.add(post)
-        db.session.commit()
-
-        return redirect("/post/{post_id}".format(post_id=post.id))
-
-    comment_form = CommentForm()
-    if comment_form.validate_on_submit():
-        comment = comment_form.text.data
-
-        new_comment = Comment(comment = comment,user = current_user,post_id = post)
-
-        new_comment.save_comment()
+        comment_form = CommentForm()
+        blog = Post.query.filter_by(id=id).first()
+        if comment_form.validate_on_submit():
+            feedback = comment_form.comment.data
+            comment= Comment(feedback=feedback,user_id=current_user.id,post_id=id)
+            db.session.add(comment)
+            db.session.commit()
+            comments=Comment.query.filter_by(post_id=id).all()
+            return render_template("blog.html", blog=blog, comments=comments,comment_form=comment_form)
+        comments=Comment.query.filter_by(post_id=id)
+        return render_template("posts.html", blog=blog,comment_form=comment_form,comments=comments) 
 
 
-    comments = Comment.get_comments(post)
+    # if request.args.get("like"):
+    #     post.likes = post.likes + 1
 
-    return render_template("posts.html", post= post, comment_form = comment_form, comments = comments, date = posted_date)
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+
+    # elif request.args.get("dislike"):
+    #     post.dislikes = post.dislikes + 1
+
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+    # comment_form = CommentForm()
+
+    # if comment_form.validate_on_submit():
+    #     comment = comment_form.text.data
+    #     new_comment = Comment(comment = comment,user = current_user,post_id = post)
+
+    #     new_comment.save_comment()
+
+    # comments = Comment.get_comments(post)
+    # return render_template("/profile/posts.html", post= post, comment_form = comment_form, comments = comments, date = posted_date)
+    # title="Hello"
+    # return render_template("/profile/posts.html",title=title)
+    # if request.args.get("like"):
+    #     post.likes = post.likes + 1
+
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+
+    # elif request.args.get("dislike"):
+    #     post.dislikes = post.dislikes + 1
+
+    #     db.session.add(post)
+    #     db.session.commit()
+
+    #     return redirect("/post/{post_id}".format(post_id=post.id))
+
+    # comment_form = CommentForm()
+
+    # if comment_form.validate_on_submit():
+    #     comment = comment_form.text.data
+    #     new_comment = Comment(comment = comment,user = current_user,post_id = post)
+
+    #     new_comment.save_comment()
+
+    # comments = Comment.get_comments(post)
+    # return render_template("/profile/posts.html", post= post, comment_form = comment_form, comments = comments, date = posted_date)
 
 @main.route('/user/<uname>/posts')
-
 def user_posts(uname):
     user = User.query.filter_by(username=uname).first()
     posts = Post.query.filter_by(user_id = user.id).all()

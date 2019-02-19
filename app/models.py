@@ -88,7 +88,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer)
     dislikes = db.Column(db.Integer)
 
-    comments = db.relationship('Comment',backref =  'pitch_id',lazy = "dynamic")
+    comments = db.relationship('Comment',backref =  'post_id',lazy = "dynamic")
 
     def save_post(self):
         db.session.add(self)
@@ -111,7 +111,7 @@ class Post(db.Model):
         user = User.query.filter_by(username=uname).first()
         posts = Post.query.filter_by(user_id=user.id).all()
 
-        post_count = 0
+        posts_count = 0
         for post in posts:
             posts_count += 1
 
