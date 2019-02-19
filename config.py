@@ -1,7 +1,7 @@
 import os
 
-class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog_test'
+# class TestConfig(Config):
+#     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog_test'
 
 class Config:
 
@@ -22,12 +22,11 @@ class ProdConfig(Config):
 
     pass
 
-
 class DevConfig(Config):
     DEBUG = True
 
 config_options = {
 'development':DevConfig,
 'production':ProdConfig,
-'test':TestConfig
+# 'test':TestConfig
 }
