@@ -105,39 +105,22 @@ def new_post():
     return render_template('new_post.html',title = title,post_form=post_form )
 
 
-# @main.route('/post/sports_post')
-# def sports_posts():
-
-#     posts = Post.get_posts('sports')
-
-#     return render_template("sport_blog.html", sports = sports)
-
-# @main.route('/post/isp_post')
-# def isp_posts():
-
-#     posts = Post.get_posts('isp')
-#     return render_template("isp_blog.html", posts = posts)
-
-# @main.route('/posts/cisco_post')
-# def cisco_posts():
-
-#     posts = Post.get_posts('isp')
-
-#     return render_template("isp_blog.html", posts = posts)
-
-@main.route('/post/<id>', methods = ['GET','POST'])
+@main.route('/post/<int:id>', methods = ['GET','POST'])
 def post(id):
+
         comment_form = CommentForm()
-        blog = Post.query.filter_by(id=id).first()
+        blogs = Post.query.filter_by(id=id).first
+
         if comment_form.validate_on_submit():
-            feedback = comment_form.comment.data
-            comment= Comment(feedback=feedback,user_id=current_user.id,post_id=id)
+            feedback = comment_form.text.data
+            comment= Comment(feedback=feedback,user=current_user,id=id)
             db.session.add(comment)
             db.session.commit()
             comments=Comment.query.filter_by(post_id=id).all()
+            
             return render_template("blog.html", blog=blog, comments=comments,comment_form=comment_form)
-        comments=Comment.query.filter_by(post_id=id)
-        return render_template("posts.html", blog=blog,comment_form=comment_form,comments=comments) 
+        comments=Comment.query.filter_by(id=id)
+        return render_template("blog.html", post=post,comment_form=comment_form,comments=comments) 
 
 
     # if request.args.get("like"):
