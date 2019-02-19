@@ -1,8 +1,8 @@
 import os
 
-# class TestConfig(Config):
-#     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog_test'
-#
+class TestConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://daud:jinkoos@localhost/blog_test'
+
 class Config:
 
    SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -28,5 +28,5 @@ class DevConfig(Config):
 config_options = {
 'development':DevConfig,
 'production':ProdConfig,
-# 'test':TestConfig
+'test':TestConfig
 }

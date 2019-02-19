@@ -1,9 +1,9 @@
-from app.models import User, Post, Comment
+from app.models import User, Blog, Comment
 from app import db
 
 def setUp(self):
-        self.user_Daud = User(username = 'Daud',password = 'password', email = 'daudi@ms.com')
-        self.new_user = User(user_id=12345,username='jinka'user = self.user_Daud )
+        self.user_Daud = User(username = 'Daud',password = 'password', email = 'daudi@gmail.com')
+        self.new_user = Blog(user_id=12345,username='jinka'user = self.user_Daud )
 
 def tearDown(self):
         User.query.delete()
@@ -19,7 +19,12 @@ def test_check_instance_variables(self):
         self.assertEquals(self.phone,'077777777')
         self.assertEquals(self.profile_picture,'/static/image/1.jpg')
         self.assertEquals(self.pass_secure,'ccccc')
-        self.assertEquals(self.password_hash,'ccccc')
+        self.assertEquals(self.password_hash,'ccccc')]
+
+def test_save_user(self):
+        self.new_user.save_user()
+        self.assertTrue(len(User.query.all())>0)
+
         
 
 

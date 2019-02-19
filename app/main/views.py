@@ -1,4 +1,4 @@
-import datetime
+import datetime,sys
 from flask import render_template,redirect,url_for, flash,request,abort
 from . import main
 from ..models import User,Blog,Comment
@@ -107,6 +107,20 @@ def new_post():
 @main.route('/post/<int:id>', methods = ['GET','POST'])
 
 def post(id):
+
+    if request.args.get("like"):
+        blog.likes=blog.likes+1
+
+        db.session.add(blog)
+        db.session.submit
+        return redirect("/pitch/{pitch_id}".format(pitch_id=pitch.id))
+
+        elif request.args.get("dislike"):
+            blog.dislikes = blog.dislikes + 1
+
+            db.session.add(blog)
+            db.session.commit()
+
     comment_form = CommentForm()
     blogs = Blog.query.filter_by(id=id).first
 
@@ -117,6 +131,7 @@ def post(id):
         db.session.commit()
 
     comments=Comment.query.filter_by(id=id).all()
+    
     return render_template("blog.html", blogs=blogs, comments=comments,comment_form=comment_form)
 
   
